@@ -10,7 +10,7 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 // Cloning your GitHub project repository
-                git 'https://github.com/charlesantonysamyu/sample-project-cicd.git'
+                git branch: 'main', url: 'https://github.com/charlesantonysamyu/sample-project-cicd.git'
             }
         }
 
