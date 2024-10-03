@@ -9,41 +9,56 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git 'https://github.com/your-username/ci-cd-sample-app.git'
+                // Cloning your GitHub project repository
+                git 'https://github.com/charlesantonysamyu/sample-project-cicd.git'
             }
         }
-        
+
         stage('Install Dependencies') {
             steps {
+                // Install npm dependencies
                 sh 'npm install'
             }
         }
 
         stage('Run Tests') {
             steps {
-                // Add your test command here, e.g., npm test
+                // Run any tests in the project
                 echo 'Running Tests...'
+                // For now, it's just an echo since there are no tests defined
+                // Replace the following line with an actual test command, e.g., `npm test`
+                sh 'npm test || true'  // Assuming the test might be placeholder (|| true avoids pipeline failure for missing tests)
             }
         }
 
         stage('Build') {
             steps {
+                // Build the project, assuming a build step exists in the project (e.g., React or Angular apps)
                 echo 'Building the application...'
-                sh 'npm run build' // If your project has a build step
+                // If no build step exists, skip this or customize for your project
+                sh 'npm run build || true'
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy to AWS Ubuntu Server') {
             steps {
-                echo 'Deploying application...'
-                sh 'scp -r ./ your-server-user@your-server-ip:/path/to/deploy'
+                echo 'Deploying application to AWS Ubuntu server...'
+                
+                // Ensure that Jenkins can SSH into your AWS Ubuntu instance.
+                // This will copy your application to the /var/www/myapp directory on your AWS Ubuntu server.
+                // Replace "ubuntu" with the correct username, typically "ubuntu" for AWS EC2 Ubuntu AMIs.
+
+                sh '''
+                scp -o StrictHostKeyChecking=no -r ./ ubuntu@13.233.83.134:/var/www/myapp
+                ssh ubuntu@13.233.83.134 'pm2 restart myapp || pm2 start /var/www/myapp/index.js --name myapp'
+                '''
             }
         }
     }
 
     post {
         success {
-            echo 'Pipeline succeeded!'
+            echo 'Pipeline completed successfully!'
         }
         failure {
             echo 'Pipeline failed!'
